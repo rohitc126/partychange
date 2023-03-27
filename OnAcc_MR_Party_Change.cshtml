@@ -1,0 +1,520 @@
+﻿@model BusinessLayer.Entity.OnAcc_MR_Party_Change
+
+@{
+    ViewBag.Title = "OnAcc_MR_Party_Change";
+    Layout = "~/Views/Shared/_MainDashboard.cshtml";
+}
+
+@Styles.Render("~/bundles/CommanStyle")
+@using (Html.BeginForm("OnAcc_MR_Party_Change", "MoneyReceipt", FormMethod.Post, new { @id = "formOnAccMRPartyChange" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    Html.RenderPartial("_Alerts");
+
+    <div class="alert alert-danger alert-dismissable" id="pageAlert" style="display:none;">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <b id="alertMessage"></b>
+    </div>
+    <div class="col-md-12">
+
+        <fieldset class="fieldSetClass">
+            <legend class="legendClass">On-Account MR Party Change</legend>
+            <div class="row" style="padding-bottom: 2px;">
+                <div class="col-md-1 col-xs-3 control-label bolder_12 required" style="padding-bottom: 2px;">
+                    MR&nbsp;Branch
+                </div>
+                <div class="col-md-3 col-xs-9" style="padding-bottom: 2px;">
+                    @Html.DropDownListFor(x => x.RR_MR_BR_ID, Model.BR_LIST, "", new { @class = "chosen-select form-control", @id = "ddlMRStn", @data_placeholder = "Select Branch" })
+                    <span id="spnCodeMessage_RR_MR_BR_ID" style="font-size:12px;font-style:italic;color:red;"></span>
+                </div>
+                <div class="col-md-1 col-xs-3  control-label bolder_12 required" style="padding-bottom: 2px;">
+                    MR&nbsp;No
+                </div>
+                <div class="col-md-3 col-xs-9" style="padding-bottom: 2px;">
+                    @Html.TextBoxFor(x => x.RR_MR_NO, new { @class = "form-control", @style = "text-transform:upperCase;font-weight:bold;", @id = "txt_RR_MR_NO", @maxlength = "12", @autocomplete = "off", @data_placeholder = "ENTER MR NO" })
+                    <span id="spnCodeMessage_RR_MR_NO" style="font-size:12px;font-style:italic;color:red;"></span>
+                    <input type="hidden" id="hdnNextMRNo" />
+                    <span id="spnLastRecord" class="disNone"></span>
+                </div>
+                <div class="col-md-4 col-xs-12" style="padding-bottom:5px;text-align:center">
+                    <button type="button" class="btn btn-success" id="btnSearch">
+                        <span class="ace-icon fa fa-search icon-on-right bigger-110">Show</span>
+                    </button>
+                </div>
+            </div>
+
+        </fieldset>
+        <div id="divPartial" style="display:none;">
+            <fieldset class="fieldSetClass">
+                <legend class="legendClass">MR on-Account Details</legend>
+                <div class="row" style="padding-bottom: 2px;">
+                    <div class="col-md-1 control-label bolder_12 required" style="padding-bottom: 2px;">
+                        MR&nbsp;No
+                    </div>
+                    <div class="col-md-2" style="padding-bottom: 2px;">
+                        <span id="spnMR_NO" class="form-control span-empty" style="background-color: #eee; background: #f7f7d7;">&nbsp;</span>
+                        @Html.HiddenFor(x => x.MR_NO, new { @id = "hdnMR_NO" })
+
+                    </div>
+                    <div class="col-md-1  control-label bolder_12 required" style="padding-bottom: 2px;">
+                        MR&nbsp;Branch
+                    </div>
+                    <div class="col-md-2 " style="padding-bottom: 2px;">
+                        <span id="spnMR_BR_NAME" class="form-control span-empty" style="background-color: #eee; background: #f7f7d7;">&nbsp;</span>
+                        @Html.HiddenFor(x => x.MR_ADV_BR_NAME, new { @id = "hdnMR_BR_NAME" })
+                    </div>
+                    <div class="col-md-1  control-label bolder_12 required" style="padding-bottom: 2px;">
+                        MR&nbsp;DATE
+                    </div>
+                    <div class="col-md-2" style="padding-bottom: 2px;">
+
+                        <span id="spnMR_DATE" class="form-control span-empty" style="background-color: #eee; background: #f7f7d7;">&nbsp;</span>
+                        @Html.HiddenFor(x => x.MR_ADV_DATE1, new { @id = "hdnMR_DATE" })
+                    </div>
+                    <div class="col-md-1  control-label bolder_12 required" style="padding-bottom: 2px;">
+                        CBS&nbsp;DATE
+                    </div>
+                    <div class="col-md-2" style="padding-bottom: 2px;">
+                        <span id="spnMR_CBS_DATE" class="form-control span-empty" style="background-color: #eee; background: #f7f7d7;">&nbsp;</span>
+                        @Html.HiddenFor(x => x.MR_CBS_DATE, new { @id = "hdnMR_CBS_DATE" })
+                    </div>
+
+                </div>
+
+                    <div class="row" style="padding-bottom: 2px;">
+                        <div class="col-md-1  control-label bolder_12 required" style="padding-bottom: 2px;">
+                            MR&nbsp;Amount
+                        </div>
+                        <div class="col-md-2" style="padding-bottom: 2px;">
+                            <span id="spnMR_TOTAL_AMT" class="form-control span-empty" style="background-color: #eee; background: #f7f7d7;">&nbsp;</span>
+                            @Html.HiddenFor(x => x.MR_TOTAL_AMT, new { @id = "hdnMR_TOTAL_AMT" })
+                        </div>
+                        <div class="col-md-1  control-label bolder_12 required " style="padding-bottom: 2px;">
+                            PARTY&nbsp;NAME/CODE
+                        </div>
+                        <div class="col-md-8" style="padding-bottom: 2px;">
+                            <span id="spnMR_P_NAME" class="form-control span-empty" style="background-color: #eee; background: #f7f7d7;">&nbsp;</span>
+                           
+                            @Html.HiddenFor(x => x.MR_ADV_P_NAME, new { @id = "oldhdnMR_P_NAME" })
+                            @Html.HiddenFor(x => x.MR_ADV_P_CODE, new { @id = "oldhdnMR_P_CODE" })
+                         
+                            @Html.HiddenFor(x => x.MR_ADV_P_ID, new { @id = "oldhdnMR_P_ID" })
+                            @Html.HiddenFor(x => x.MR_ADV_PA_ID, new { @id = "oldhdnMR_PA_ID" })
+                        </div>
+                    </div>
+
+                <div class="row" style="padding-bottom:5px; ">
+                    <div class="col-md-6  control-label bolder_12 required" style="padding-bottom:5px;">
+                        <div class="col-md-1 input-group" style="width:100%">
+                            <span class="input-group-addon">
+                                <span class="ace-icon fa fa-book icon-on-right bigger-110"></span>
+                                Party Code
+                            </span>
+                            @Html.TextBoxFor(x => x.P_NAME, new { @class = "form-control", @id = "txtSearchParty", @autocomplete = "off", @style = "text-transform:upperCase;", @maxlength = "75", @placeholder = "Please Select New Party Name" })
+                            <span id="spnPartyCode" toggle="#close-field" class="fa fa fa-times field-icon toggle-close" style=" display: none;"></span>
+                           
+                            @Html.HiddenFor(x => x.P_CODE, new { @id = "newhdnPartyCode" })
+                            @Html.HiddenFor(x => x.P_ID, new { @id = "newhdnParty_ID" })
+                            @Html.HiddenFor(x => x.PA_ID, new { @id = "newhdnPartyPA_ID" })
+                           </div>
+
+                    </div>
+                  
+                    <div class="col-md-1  control-label bolder_12 required" style="padding-bottom: 2px;">
+                        GST NO
+                    </div>
+                    <div class="col-md-2 " style="padding-bottom: 2px;">
+                        <span id="spnPA_GST_NO" class="form-control span-empty" style="background-color: #eee; background: #f7f7d7;">&nbsp;</span>
+                        @Html.HiddenFor(x => x.PA_GST_NO, new { @id = "hdnPA_GST_NO" })
+                        @Html.HiddenFor(x => x.MR_NEW_PA_ID, new { @id = "hdnMR_NEW_PA_ID" })
+                        @Html.HiddenFor(x => x.MRPC_NEW_GST_NO, new { @id = "newhdnMRPC_NEW_GST_NO", @style = "text-transform:upperCase;", @placeholder = "Please Select  Gst Number" })
+                        @Html.HiddenFor(x => x.PA_GST_VALIDATE, new { @id = "hdnPA_GST_VALIDATE" }) 
+                    </div>
+                   
+
+                </div>
+                <div class="row" style="padding-bottom: 2px;">
+                    <div class="col-md-1  control-label bolder_12 required" style="padding-bottom: 2px;">
+                        Remarks
+                    </div>
+                    <div class="col-md-11" style="padding-bottom: 2px;">
+                        @Html.TextBoxFor(x => x.REMARKS, new { @class = "form-control", @id = "txt_REMARKS", @maxlength = "250", @autocomplete = "off" })
+                        <span id="spnCodeMessage_REMARKS" style="font-size:12px;font-style:italic;color:red;"></span>
+                    </div>
+
+
+                </div>
+                <div class="col-md-12 col-xs-12" style="padding-bottom:5px;text-align:center">
+                    @*<button type="button" class="btn btn-success" id="btnSave">
+                        <span class="btn btn-success">Save</span>
+                    </button>*@
+                    <input type="submit" class="btn btn-success btn-sm" value="Save" name="Save" style="width:auto;" id="btnSave" />
+                    @Html.HiddenFor(x => x.MR_ID, new { @id = "hdnMR_ID" })
+                    @Html.HiddenFor(x => x.MR_TYPE, new { @id = "hdnMR_TYPE" })
+                  
+                   
+                </div>
+            </fieldset>
+
+
+        </div>
+
+
+    </div>
+
+
+}
+@Scripts.Render("~/bundles/CommanScripts")
+
+
+
+<style>
+    .tdLeft {
+        text-align: left;
+    }
+
+    .autoFill {
+        line-height: 28px;
+        height: 34px;
+        box-shadow: none;
+        background: #FAFAFA;
+        border-radius: 0;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        color: #858585;
+        background-color: #FAFAFA;
+        border: 1px solid #D5D5D5;
+        cursor: pointer;
+    }
+
+    .field-icon {
+        float: right;
+        position: relative;
+        z-index: 2052;
+        font-size: 16px;
+        margin-left: -30px;
+        margin-top: 6px;
+        padding-right: 10px;
+        color: #888;
+    }
+
+    span.form-control {
+        background: #f7f7d7;
+        min-height: 34px;
+        padding: 6px 6px;
+        font-size: 13px;
+    }
+
+    @@media screen and (max-width: 600px) {
+        .input-group-addon {
+            visibility: hidden;
+            clear: both;
+            float: left;
+            display: none;
+        }
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var validator = $("#formOnAccMRPartyChange").data('validator');
+        validator.settings.ignore = ":hidden:not(select)";
+        $('.chosen-select').chosen().change(function () {
+            $(this).trigger('click');
+        });
+        $("#txt_RR_MR_NO").keyup(function () {
+            $('[data-valmsg-for="RR_MR_NO"]').hide();
+            if ($("#txt_RQMSPY_MR_NO").val().length == 0) {
+                $('[data-valmsg-for="RR_MR_NO"]').show();
+                $("#spnCodeMessage_RR_MR_NO").text('');
+            }
+        });
+
+        $("#txt_RR_MR_NO").blur(function (e) {
+            $("#divPartial").hide();
+            if ($("#txt_RR_MR_NO").val().length == 0) {
+                $('[data-valmsg-for="RR_MR_NO"]').show();
+                $("#spnCodeMessage_RR_MR_NO").text('');
+            }
+            MRExistance();
+        });
+
+        $("#ddlMRStn").change(function () {
+            $("#txt_RR_MR_NO").val('');
+            $("#divPartial").hide();
+            $(".close").trigger('click');
+        });
+        $("#btnSearch").click(function (e) {
+            $(".close").trigger('click');
+            $(".toggle-close").hide();
+            $('#txtSearchParty').val("");
+            $("#hdnMR_NEW_PA_ID").val('0');
+            $("#newhdnMRPC_NEW_GST_NO").val('');
+            $("#spnPA_GST_NO").text('');
+            $("#txt_REMARKS").val('');
+
+            flag = validateSearch();
+            if (flag > 0) {
+               
+                e.preventDefault();
+                return false;
+              
+                } else {
+               
+                var _brId = $('#ddlMRStn option:selected').val() == '' ? '0' : $('#ddlMRStn option:selected').val();
+                var _mrNo = $("#txt_RR_MR_NO").val() == "" ? "0" : $("#txt_RR_MR_NO").val();
+
+                if (_mrNo != '' && _brId != '0') {
+                  
+                
+                    $.ajax({
+                        url: "../MoneyReceipt/SELECT_OnAcc_MR_Party_Change",
+                        type: "GET",
+                        dataType: "json",
+                        async: false,
+                        data: { mrNo: _mrNo, brId: _brId },
+                        success: function (data) {
+                          
+                            if (data.MR_ID != 0 ) {
+                              
+                                if (!(data.MR_ID == '0' || data.MR_ID == '')) {
+                                  
+                                    $("#divPartial").show();
+
+                                    $("#hdnMR_ID").val(data.MR_ID);
+                                    $("#spnMR_NO").text(data.MR_NO);
+                                    $("#hdnMR_NO").val(data.MR_NO);
+                                    $("#spnMR_BR_NAME").text(data.MR_ADV_BR_NAME);
+                                    $("#spnMR_DATE").text(data.MR_ADV_DATE1);
+                                    $("#spnMR_P_NAME").text(data.MR_ADV_P_NAME + ' {' + data.MR_ADV_P_CODE + '}');
+                                    $("#oldhdnMR_P_ID").val(data.MR_ADV_P_ID);
+                                    $("#oldhdnMR_P_NAME").val(data.MR_ADV_P_NAME);
+                                    $("#oldhdnMR_P_CODE").val(data.MR_ADV_P_CODE);
+                                    $("#oldhdnMR_PA_ID").val(data.MR_ADV_PA_ID);
+                                    $("#spnMR_CBS_DATE").text(data.MR_CBS_DATE);
+                                    $("#hdnPA_GST_NO").val(data.PA_GST_NO);
+                                    $("#spnMR_TOTAL_AMT").text(data.MR_TOTAL_AMT);
+                                    $("#hdnMR_TOTAL_AMT").text(data.MR_TOTAL_AMT);
+
+                                    $("#hdnMR_TYPE").val(data.MR_TYPE);
+
+                                }
+                                else {
+                                   
+                                    //$("#spnCodeMessage_RR_MR_NO").text('MR NO : ' + _mrNo + data.MSG);
+                                    Msg_Alert('MR NO : ' + _mrNo +   ' NOT FOUND !!<br> Please Enter Correct MR Number '   + data.MSG);
+                                    return false;
+                                  
+                                }
+                            } else {
+                                //alert('MR NO : ' + _mrNo + ' ' + data.MSG);
+                                //$("#spnCodeMessage_RR_MR_NO").text('MR NO : ' + _mrNo + '  ' + data.MSG);
+
+                                Msg_Alert('MR NO : ' + _mrNo + ' NOT FOUND !! <br> Please Enter Correct MR Number ' + data.MSG);
+                                return false;
+                                
+                            }
+                        }
+                    });
+                }
+                else {
+                    
+
+                }
+            }
+
+        });
+
+        function validateSearch() {
+            if ($("#ddlMRStn option:selected").val() == "") {
+                $('#spnCodeMessage_RR_MR_BR_ID').text('Please select branch').show();
+                return 1;
+            }
+            else {
+                $('#spnCodeMessage_RR_MR_BR_ID').text('').hide();
+            }
+            if ($("#txt_RR_MR_NO").val() == "") {
+                $('#spnCodeMessage_RR_MR_NO').text('Please enter MR no').show();
+                $("#txt_RR_MR_NO").focus();
+                return 1;
+            }
+            else {
+              
+                $('#spnCodeMessage_RR_MR_NO').text('').hide();
+            }
+        }
+        var MRExistance = function () {
+            $("#spnCodeMessage_RR_MR_NO").text('');
+            var _mrBrId = $('#ddlMRStn option:selected').val() == '' ? '0' : $('#ddlMRStn option:selected').val();
+            err_cnt = 0;
+            if (parseInt(_mrBrId) > 0) {
+                var _mrNo = $("#txt_RR_MR_NO").val();
+
+                if (_mrNo.length == 12 || _mrNo.length == 8) {
+                    $.ajax({
+                        url: "../MoneyReceipt/CHECK_EXISTING_MR_NO",
+                        type: "GET",
+                        dataType: "json",
+                        async: false,
+                        data: { mrNo: _mrNo, brId: _brId },
+                        success: function (data) {
+                            if (data.IsExist) {
+                                $("#spnCodeMessage_RR_MR_NO").text('').show();
+
+                                if (data.MR_TYPE != '4') {
+                                    $("#spnCodeMessage_RR_MR_NO").text('This is not an on-account MR No.').show();
+                                    $("#txt_RR_MR_NO").focus();
+                                    $('[data-valmsg-for="RR_MR_NO"]').hide();
+                                    err_cnt += 1;
+                                }
+                            }
+                            else if (!data.IsExist && !data.IsAvailableInDCC) {
+                                $("#spnCodeMessage_RR_MR_NO").text('MR No is not in dcr.').show();
+                                $("#txt_RR_MR_NO").focus();
+                                $('[data-valmsg-for="RR_MR_NO"]').hide();
+                                err_cnt += 1;
+                                $("#txt_RR_MR_NO").val('');
+                                $("#divPartial").hide();
+                            }
+                            else {
+                                $("#spnCodeMessage_RR_MR_NO").text('').hide();
+                               
+                            }
+                        }
+                    });
+                }
+                else {
+                    $('#spnCodeMessage_RR_MR_NO').text('MR No must be 8 or 12 digit.').show();
+                    $("#txt_RR_MR_NO").focus();
+                    $('[data-valmsg-for="RR_MR_NO"]').hide();
+                }
+            }
+            else {
+                $("#ddlMRStn_chosen").addClass('chosen-container-active').find('[type=text]').focus();
+                $('[data-valmsg-for="RR_MR_BR_ID"]').hide();
+            }
+        }
+
+        $("#txtSearchParty").autocomplete({
+            source: function (request, response) {
+                var brid_ = $("#ddlMRStn option:selected").val() == '' ? '0' : $("#ddlMRStn option:selected").val();           
+
+                if (parseInt(brid_) > 0 && request.term.length > 2) {
+                    $.ajax({
+                        url: '@Url.Action("GetCnorPartyListByPartyNameOrCode", "Consignment")',
+                        type: "GET",
+                        dataType: "json",
+                        data: { brId: brid_, nameOrCode: request.term },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.P_NAME, value: item.P_NAME, id: item.PA_ID };
+                            }))
+                        }
+                    })
+                }
+            },
+            delay: 0,
+            autoFill: true,
+            autoFocus: true,
+            select: function (event, ui) {
+                var id = ui.item.id;
+                $("#hdnMR_NEW_PA_ID").val(id);
+                BillPartyDetails(id);
+                $(".toggle-close").show();
+             
+                //$(".close").click();
+            },
+  
+            messages: {
+                noResults: "", results: ""
+            },
+            focus: function (event, ui) { event.preventDefault(); }
+        });
+
+        $(".toggle-close").click(function () {
+            $(".toggle-close").hide();
+            $('#txtSearchParty').val("");
+            $("#hdnMR_NEW_PA_ID").val('0');
+            $("#newhdnMRPC_NEW_GST_NO").val('');
+            $("#spnPA_GST_NO").text('');
+            
+           
+        });
+
+        function BillPartyDetails(id) {
+            $("#spnMR_P_NAME").text('');
+            
+            //var id = $("#hdnMR_PA_ID").val();
+           
+            if (id != '') {
+                $.ajax({
+                    url: "../Consignment/GetPartyAddressByAddrId",
+                    type: "GET",
+                    dataType: "json",
+                    async: false,
+                    data: { addrId: id },
+                    success: function (data) {                       
+                      
+                    
+                        $('#newhdnParty_ID').val(data.P_ID);
+                        $('#newhdnPartyPA_ID').val(data.PA_ID);
+                        $('#txtSearchParty').val(data.P_NAME);
+                        $('#newhdnPartyCode').val(data.P_CODE);                       
+                        $("#newhdnMRPC_NEW_GST_NO").val(data.P_ADDRESS.PA_GST_NO);                       
+                        $("#spnPA_GST_NO").text(data.P_ADDRESS.PA_GST_NO);
+                        $("#hdnPA_GST_VALIDATE").val(data.P_ADDRESS.PA_GST_VALIDATE);
+                        
+                        //alert($("#spnPA_GST_NO").text(data.P_ADDRESS.PA_GST_NO));
+                    }
+                });
+            }
+        }
+
+    });
+
+
+    $("#btnSave").click(function (e) {
+
+      var newPAId=  $("#hdnMR_NEW_PA_ID").val();
+      var newGSTNo = $("#newhdnMRPC_NEW_GST_NO").val();
+      var newPA_GST_VALIDATE = $("#hdnPA_GST_VALIDATE").val();
+     // alert(newPA_GST_VALIDATE);
+      if (newPAId == "0") {
+          Msg_Alert('Please select party  !! ');
+          e.preventDefault();
+          return false;
+      }
+      if (newGSTNo == "") {
+          Msg_Alert('GST No not available. Party change not allowed !! ');
+          e.preventDefault();
+          return false;
+      }
+
+      //if ($("#hdnPA_GST_VALIDATE").val()==false ) {
+      //    Msg_Alert('GST No is not validated. Party change not allowed !! ');
+      //    e.preventDefault();
+      //    return false;
+      //}
+     
+    });
+
+
+    </script>
+
+<script type="text/javascript">
+        function init() {
+            //---Reset Page.
+            shortcut.add("Alt+R", function () {
+                var url = '@Url.Action("OnAcc_MR_Party_Change", "MoneyReceipt")';
+                window.location.href = url;
+            });
+
+            shortcut.add("esc", function () {
+                // Goto Home Screen
+                var url = '@Url.Action("Index", "Home")';
+                window.location.href = url;
+            });
+        }
+        window.onload = init;
+    </script>
